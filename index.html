@@ -65,6 +65,54 @@
       cursor: pointer;
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
+
+    /* Flashcard styles */
+    #flashcardContainer {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      z-index: 998;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    .flashcard {
+      background: white;
+      color: black;
+      border-radius: 15px;
+      padding: 2em;
+      text-align: center;
+      font-size: 2em;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      width: 300px;
+      transform: scale(1);
+      transition: transform 0.3s ease;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {transform: translateY(100px); opacity: 0;}
+      to {transform: translateY(0); opacity: 1;}
+    }
+
+    .flash-controls {
+      margin-top: 1em;
+    }
+
+    .flash-controls button {
+      font-size: 1em;
+      margin: 0 0.5em;
+    }
   </style>
 </head>
 <body>
@@ -82,7 +130,7 @@
 
 <section id="categories">
   <h2>📚 Categorías de Vocabulario</h2>
-  <button onclick="alert('¡Pronto!')">🌈 Colores</button>
+  <button onclick="openFlashcards()">🌈 Colores</button>
   <button onclick="alert('¡Pronto!')">🍽 Comida</button>
   <button onclick="alert('¡Pronto!')">😊 Emociones</button>
   <button onclick="alert('¡Pronto!')">👨‍👩‍👧 Familia</button>
@@ -92,6 +140,19 @@
   <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_58cb2b2de5.mp3" type="audio/mpeg">
 </audio>
 <div id="musicControl" onclick="toggleMusic()">🔊 Música: ON</div>
+
+<!-- Flashcard Container -->
+<div id="flashcardContainer" onclick="event.target.id==='flashcardContainer' && closeFlashcards()">
+  <div class="flashcard" id="flashcard">
+    <div id="wordES">Rojo</div>
+    <div style="font-size:0.6em; color:gray;" id="wordEN">(Red)</div>
+    <div class="flash-controls">
+      <button onclick="prevCard()">◀</button>
+      <button onclick="speakWord()">🔊</button>
+      <button onclick="nextCard()">▶</button>
+    </div>
+  </div>
+</div>
 
 <script>
   const music = document.getElementById("bgMusic");
@@ -116,7 +177,6 @@
     }
   }
 
-  // Check if name is already saved
   window.onload = () => {
     const name = localStorage.getItem("learnerName");
     if (name) {
@@ -124,6 +184,47 @@
       document.getElementById("greeting").innerText = `¡Hola de nuevo, ${name}!`;
     }
   };
+
+  // Flashcards logic
+  const flashcards = [
+    { es: "Rojo", en: "Red" },
+    { es: "Azul", en: "Blue" },
+    { es: "Verde", en: "Green" },
+    { es: "Amarillo", en: "Yellow" },
+    { es: "Negro", en: "Black" }
+  ];
+  let currentIndex = 0;
+
+  function openFlashcards() {
+    document.getElementById("flashcardContainer").style.display = "flex";
+    showCard(currentIndex);
+  }
+
+  function closeFlashcards() {
+    document.getElementById("flashcardContainer").style.display = "none";
+  }
+
+  function showCard(index) {
+    const card = flashcards[index];
+    document.getElementById("wordES").innerText = card.es;
+    document.getElementById("wordEN").innerText = `(${card.en})`;
+  }
+
+  function nextCard() {
+    currentIndex = (currentIndex + 1) % flashcards.length;
+    showCard(currentIndex);
+  }
+
+  function prevCard() {
+    currentIndex = (currentIndex - 1 + flashcards.length) % flashcards.length;
+    showCard(currentIndex);
+  }
+
+  function speakWord() {
+    const msg = new SpeechSynthesisUtterance(flashcards[currentIndex].es);
+    msg.lang = "es-ES";
+    speechSynthesis.speak(msg);
+  }
 </script>
 
 </body>
