@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Learn Spanish - ¡Vamos! - Made By Andy Torres</title>
+  <title>Learn Spanish - ¡Vamos!</title>
   <style>
     body {
       margin: 0;
@@ -130,10 +130,10 @@
 
 <section id="categories">
   <h2>📚 Categorías de Vocabulario</h2>
-  <button onclick="openFlashcards()">🌈 Colores</button>
-  <button onclick="alert('¡Pronto!')">🍽 Comida</button>
-  <button onclick="alert('¡Pronto!')">😊 Emociones</button>
-  <button onclick="alert('¡Pronto!')">👨‍👩‍👧 Familia</button>
+  <button onclick="openFlashcards('colores')">🌈 Colores</button>
+  <button onclick="openFlashcards('comida')">🍽 Comida</button>
+  <button onclick="openFlashcards('emociones')">😊 Emociones</button>
+  <button onclick="openFlashcards('familia')">👨‍👩‍👧 Familia</button>
 </section>
 
 <audio id="bgMusic" loop autoplay>
@@ -186,42 +186,62 @@
   };
 
   // Flashcards logic
-  const flashcards = [
-    { es: "Rojo", en: "Red" },
-    { es: "Azul", en: "Blue" },
-    { es: "Verde", en: "Green" },
-    { es: "Amarillo", en: "Yellow" },
-    { es: "Negro", en: "Black" }
-  ];
+  const flashcards = {
+    colores: [
+      { es: "Rojo", en: "Red" },
+      { es: "Azul", en: "Blue" },
+      { es: "Verde", en: "Green" },
+      { es: "Amarillo", en: "Yellow" },
+      { es: "Negro", en: "Black" }
+    ],
+    comida: [
+      { es: "Manzana", en: "Apple" },
+      { es: "Banana", en: "Banana" },
+      { es: "Naranja", en: "Orange" }
+    ],
+    emociones: [
+      { es: "Feliz", en: "Happy" },
+      { es: "Triste", en: "Sad" },
+      { es: "Enojado", en: "Angry" }
+    ],
+    familia: [
+      { es: "Madre", en: "Mother" },
+      { es: "Padre", en: "Father" },
+      { es: "Hermano", en: "Brother" }
+    ]
+  };
+  let currentCategory = 'colores';
   let currentIndex = 0;
 
-  function openFlashcards() {
+  function openFlashcards(category) {
+    currentCategory = category;
+    currentIndex = 0;
     document.getElementById("flashcardContainer").style.display = "flex";
-    showCard(currentIndex);
+    showCard(currentCategory, currentIndex);
   }
 
   function closeFlashcards() {
     document.getElementById("flashcardContainer").style.display = "none";
   }
 
-  function showCard(index) {
-    const card = flashcards[index];
+  function showCard(category, index) {
+    const card = flashcards[category][index];
     document.getElementById("wordES").innerText = card.es;
     document.getElementById("wordEN").innerText = `(${card.en})`;
   }
 
   function nextCard() {
-    currentIndex = (currentIndex + 1) % flashcards.length;
-    showCard(currentIndex);
+    currentIndex = (currentIndex + 1) % flashcards[currentCategory].length;
+    showCard(currentCategory, currentIndex);
   }
 
   function prevCard() {
-    currentIndex = (currentIndex - 1 + flashcards.length) % flashcards.length;
-    showCard(currentIndex);
+    currentIndex = (currentIndex - 1 + flashcards[currentCategory].length) % flashcards[currentCategory].length;
+    showCard(currentCategory, currentIndex);
   }
 
   function speakWord() {
-    const msg = new SpeechSynthesisUtterance(flashcards[currentIndex].es);
+    const msg = new SpeechSynthesisUtterance(flashcards[currentCategory][currentIndex].es);
     msg.lang = "es-ES";
     speechSynthesis.speak(msg);
   }
